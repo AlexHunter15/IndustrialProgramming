@@ -87,5 +87,8 @@ public class Main {
 
         DataValidator.validateData(txt);
         Archieve.createZipArchive(txt, "house_archive.zip");
+        Archieve.createZipArchive(txt, "house_archive1.zip");
+        Archieve.createJarArchive(txt, "fabrics.jar");
+        Archieve.convertZipToRar("house_archive.zip", "house_archive.rar");
     }
 }
