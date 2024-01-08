@@ -1,4 +1,5 @@
 import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +7,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import java.util.jar.JarOutputStream;
 import java.util.jar.JarEntry;
+import java.util.zip.ZipInputStream;
+import java.util.jar.JarInputStream;
 
 public class Archieve {
     public static void createZipArchive(ArrayList<Fabric> fabrics, String zipFileName) {
@@ -16,11 +19,9 @@ public class Archieve {
             for (int i = 0; i < fabrics.size(); i++) {
                 Fabric fabric = fabrics.get(i);
 
-                // Creating an entry for each Person in the zip file
                 ZipEntry entry = new ZipEntry("house" + i + ".txt");
                 zos.putNextEntry(entry);
 
-                // Writing Person's data to the zip entry
                 String personData = fabric.getType() + " " + fabric.getPlace() + " " + fabric.getAmount();
                 zos.write(personData.getBytes());
 
@@ -43,11 +44,9 @@ public class Archieve {
             for (int i = 0; i < fabrics.size(); i++) {
                 Fabric fabric = fabrics.get(i);
 
-                // Creating an entry for each fabric in the jar file
                 JarEntry entry = new JarEntry("fabric" + i + ".txt");
                 jos.putNextEntry(entry);
 
-                // Writing fabric's data to the jar entry
                 String fabricData = fabric.getType() + " " + fabric.getPlace() + " " + fabric.getAmount();
                 jos.write(fabricData.getBytes());
 
@@ -64,17 +63,15 @@ public class Archieve {
 
     public static void convertZipToRar(String zipFilePath, String rarFilePath) {
         try {
-            // Command to run WinRAR from the command line to convert ZIP to RAR
             List<String> command = new ArrayList<>();
-            command.add("C:\\Program Files\\WinRAR\\WinRAR.exe"); // Replace 'path_to_winrar' with the actual path to WinRAR executable
-            command.add("a"); // 'a' command in WinRAR stands for 'add to archive'
-            command.add(rarFilePath); // Destination RAR file path
-            command.add(zipFilePath); // Source ZIP file path
+            command.add("C:\\Program Files\\WinRAR\\WinRAR.exe");
+            command.add("a");
+            command.add(rarFilePath); 
+            command.add(zipFilePath);
 
             ProcessBuilder processBuilder = new ProcessBuilder(command);
             Process process = processBuilder.start();
 
-            // Wait for the process to complete
             int exitCode = process.waitFor();
             if (exitCode == 0) {
                 System.out.println("Conversion completed successfully.");
@@ -84,6 +81,67 @@ public class Archieve {
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
+    }
+    public static ArrayList<String> extractFromZip(String zipFilePath) {
+        try {
+            FileInputStream fis = new FileInputStream(zipFilePath);
+            ZipInputStream zis = new ZipInputStream(fis);
+
+            ZipEntry entry;
+            int entryCount = 0;
+            while ((entry = zis.getNextEntry()) != null) {
+                String entryName = entry.getName();
+                FileOutputStream fos = new FileOutputStream("extracted_" + entryName);
+
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = zis.read(buffer)) != -1) {
+                    fos.write(buffer, 0, bytesRead);
+                }
+
+                fos.close();
+                zis.closeEntry();
+                entryCount++;
+            }
+
+            zis.close();
+            fis.close();
+            System.out.println("Extracted " + entryCount + " entries from " + zipFilePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static ArrayList<String> extractFromJar(String jarFilePath) {
+        try {
+            FileInputStream fis = new FileInputStream(jarFilePath);
+            JarInputStream jis = new JarInputStream(fis);
+
+            JarEntry entry;
+            int entryCount = 0;
+            while ((entry = jis.getNextJarEntry()) != null) {
+                String entryName = entry.getName();
+                FileOutputStream fos = new FileOutputStream("extracted_" + entryName);
+
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = jis.read(buffer)) != -1) {
+                    fos.write(buffer, 0, bytesRead);
+                }
+
+                fos.close();
+                jis.closeEntry();
+                entryCount++;
+            }
+
+            jis.close();
+            fis.close();
+            System.out.println("Extracted " + entryCount + " entries from " + jarFilePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
