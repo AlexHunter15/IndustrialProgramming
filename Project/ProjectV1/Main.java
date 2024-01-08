@@ -67,8 +67,12 @@ public class Main {
         outputBuilder.setArchiveCreationResult("house_archive.zip");
         outputBuilder.setArchiveCreationResult("house_archive1.rar");
         outputBuilder.setArchiveCreationResult("fabrics.jar");
+        ArrayList<String> extractedFromZip = Archieve.extractFromZip("house_archive.zip");
+        ArrayList<String> extractedFromJar = Archieve.extractFromJar("fabrics.jar");
 
-        // Создание экземпляра OutputResults после установки всех данных
+        output.displayExtractedZipContents(extractedFromZip);
+        output.displayExtractedJarContents(extractedFromJar);
+
         output = outputBuilder.build();
 
         // Вывод результатов
@@ -96,7 +100,6 @@ public class Main {
         System.out.println("Место: " + fabricWithMetadata.getPlace());
         System.out.println("Количество: " + fabricWithMetadata.getAmount());
         System.out.println("Метаданные: " + fabricWithMetadata.getMetadata().getMetadata());
-
         scanner1.close();
 
     }
